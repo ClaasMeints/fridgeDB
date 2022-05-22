@@ -1,5 +1,5 @@
 {
-  "scheme": null,
+  "scheme": "claas.expo.app",
   "hostType": "lan",
   "lanType": "ip",
   "devClient": true,
