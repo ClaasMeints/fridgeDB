@@ -1,8 +1,8 @@
 {
-	"folders": [
-		{
-			"path": ".."
-		}
+    "folders": [
+        {
+            "path": ".."
+        }
     ],
     "settings": {
         "sqltools.connections": [
@@ -13,7 +13,7 @@
                 "askForPassword": true,
                 "driver": "PostgreSQL",
                 "name": "fridgeDB",
-                "database": "fridgeDB",
+                "database": "fridgedb",
                 "username": "dev"
             }
         ]

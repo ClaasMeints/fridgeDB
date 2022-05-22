@@ -21,7 +21,7 @@ services:
     environment:
       - POSTGRES_USER=dev
       - POSTGRES_PASSWORD=dev
-      - POSTGRES_DB=fridgeDB
+      - POSTGRES_DB=django
 
 volumes:
   postgres_data:

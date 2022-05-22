@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="fridgDB-container" id="Project_1867" database="PostgreSQL" >
+	<schema name="public" >
+		<comment><![CDATA[standard public schema]]></comment>
+		<table name="accountfridgerelation" >
+			<column name="accountid" type="bigint" jt="-5" mandatory="y" />
+			<column name="fridgeid" type="uuid" jt="102" mandatory="y" />
+			<index name="pk_accountfridgerelation" unique="PRIMARY_KEY" >
+				<column name="accountid" />
+				<column name="fridgeid" />
+			</index>
+			<fk name="accountid" to_schema="public" to_table="useraccount" >
+				<fk_column name="accountid" pk="accountid" />
+			</fk>
+			<fk name="fridgeid" to_schema="public" to_table="fridge" >
+				<fk_column name="fridgeid" pk="fridgeid" />
+			</fk>
+		</table>
+		<table name="fridge" >
+			<column name="fridgeid" type="uuid" jt="102" mandatory="y" />
+			<index name="pk_fridge_fridgeid" unique="PRIMARY_KEY" >
+				<column name="fridgeid" />
+			</index>
+		</table>
+		<table name="fridgecontent" >
+			<column name="date" type="timestamp" length="0" decimal="6" jt="93" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="fridgeid" type="uuid" jt="102" mandatory="y" />
+			<column name="productid" type="bigint" jt="-5" mandatory="y" />
+			<index name="pk_fridgecontent" unique="PRIMARY_KEY" >
+				<column name="date" />
+				<column name="fridgeid" />
+				<column name="productid" />
+			</index>
+			<fk name="fridgeid" to_schema="public" to_table="fridge" >
+				<fk_column name="fridgeid" pk="fridgeid" />
+			</fk>
+			<fk name="productid" to_schema="public" to_table="product" >
+				<fk_column name="productid" pk="productid" />
+			</fk>
+		</table>
+		<table name="product" >
+			<column name="productid" type="bigint" jt="-5" mandatory="y" />
+			<column name="barcodeid" type="bigint" jt="-5" />
+			<index name="unq_product_productid" unique="UNIQUE_KEY" >
+				<column name="productid" />
+			</index>
+			<index name="pk_product_productid" unique="PRIMARY_KEY" >
+				<column name="productid" />
+			</index>
+		</table>
+		<table name="productcategory" >
+			<column name="categoryid" type="bigint" jt="-5" mandatory="y" />
+			<column name="name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="image" type="bytea" jt="-2" />
+			<column name="durability" type="interval" jt="1111" />
+			<column name="averageprice" type="bigint" jt="-5" />
+			<index name="pk_productcategory_categoryid" unique="PRIMARY_KEY" >
+				<column name="categoryid" />
+			</index>
+		</table>
+		<table name="productcategoryrelation" >
+			<column name="productid" type="bigint" jt="-5" />
+			<column name="categoryid" type="bigint" jt="-5" />
+			<index name="idx_productcategoryrelation" unique="NORMAL" >
+				<column name="productid" />
+				<column name="categoryid" />
+			</index>
+			<fk name="productid" to_schema="public" to_table="product" >
+				<fk_column name="productid" pk="productid" />
+			</fk>
+			<fk name="categoryid" to_schema="public" to_table="productcategory" >
+				<fk_column name="categoryid" pk="categoryid" />
+			</fk>
+		</table>
+		<table name="useraccount" prior="fridgeowner" >
+			<column name="accountid" prior="userid" type="bigint" jt="-5" mandatory="y" />
+			<index name="pk_fridgeowner_userid" unique="PRIMARY_KEY" >
+				<column name="accountid" />
+			</index>
+		</table>
+	</schema>
+	<connector name="fridgDB-container" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.2.18.jar" driver_desc="Standard" host="localhost" port="5432" instance="fridgedb" user="dev" passwd="ZGV2" />
+	<layout name="Main Layout" id="Layout_914" show_relation="columns" >
+		<entity schema="public" name="accountfridgerelation" color="C1D8EE" x="48" y="176" />
+		<entity schema="public" name="fridge" color="C1D8EE" x="48" y="304" />
+		<entity schema="public" name="fridgecontent" color="C1D8EE" x="224" y="304" />
+		<entity schema="public" name="product" color="C1D8EE" x="432" y="304" />
+		<entity schema="public" name="productcategory" color="C1D8EE" x="432" y="640" />
+		<entity schema="public" name="productcategoryrelation" color="C1D8EE" x="432" y="464" />
+		<entity schema="public" name="useraccount" color="C1D8EE" x="48" y="48" />
+	</layout>
+</project>
