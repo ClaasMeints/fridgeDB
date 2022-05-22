@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-fridgedbapp-staging-90539-authRole",
+      "UnauthRoleArn": "arn:aws:iam::428713998352:role/amplify-fridgedbapp-staging-90539-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::428713998352:role/amplify-fridgedbapp-staging-90539-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-fridgedbapp-staging-90539-deployment",
+      "UnauthRoleName": "amplify-fridgedbapp-staging-90539-unauthRole",
+      "StackName": "amplify-fridgedbapp-staging-90539",
+      "StackId": "arn:aws:cloudformation:eu-central-1:428713998352:stack/amplify-fridgedbapp-staging-90539/59d12b60-d9ae-11ec-85b4-0645d1766662",
+      "AmplifyAppId": "d3dm2atbrnfr4a"
+    },
+    "categories": {
+      "auth": {
+        "FridgeDBApp": {}
+      }
+    }
+  }
+}
