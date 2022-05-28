@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="fridgDB-container" id="Project_2609" database="PostgreSQL" >
+	<schema name="public" >
+		<comment><![CDATA[standard public schema]]></comment>
+		<udt name="percentage" udt_java_type="5" udt_precision="NONE" >
+			<udt_script><![CDATA[CREATE DOMAIN ${name} smallint DEFAULT 100 CONSTRAINT percentage_check CHECK (VALUE >= 0 AND VALUE <= 100)]]></udt_script>
+		</udt>
+		<table name="account_device_realtion" >
+			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('account_device_realtion_account_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('account_device_realtion_device_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_account_device_realtion" unique="PRIMARY_KEY" >
+				<column name="account_id" />
+				<column name="device_id" />
+			</index>
+			<fk name="fk_account_device_realtion_user_account" to_schema="public" to_table="user_account" >
+				<fk_column name="account_id" pk="account_id" />
+			</fk>
+			<fk name="fk_account_device_realtion_device" to_schema="public" to_table="device" >
+				<fk_column name="device_id" pk="device_id" />
+			</fk>
+		</table>
+		<table name="device" >
+			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('device_device_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="device_name" type="varchar" length="100" jt="12" />
+			<index name="pk_device_device_id" unique="PRIMARY_KEY" >
+				<column name="device_id" />
+			</index>
+		</table>
+		<table name="device_content" >
+			<column name="filled_in" type="timestamp" length="0" decimal="6" jt="93" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('device_content_device_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('device_content_product_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="dropped_out" prior="droped_out" type="timestamp" length="0" decimal="6" jt="93" />
+			<column name="percentage_left" type="percentage" jt="5" />
+			<index name="pk_device_content" unique="PRIMARY_KEY" >
+				<column name="filled_in" />
+				<column name="device_id" />
+				<column name="product_id" />
+			</index>
+			<fk name="fk_device_content_device" to_schema="public" to_table="device" delete_action="restrict" >
+				<fk_column name="device_id" pk="device_id" />
+			</fk>
+			<fk name="fk_device_content_product" to_schema="public" to_table="product" delete_action="restrict" >
+				<fk_column name="product_id" pk="product_id" />
+			</fk>
+		</table>
+		<table name="product" >
+			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_product_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="product_name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="barcode_id" type="integer" jt="4" >
+				<comment><![CDATA[Recerence to external API]]></comment>
+			</column>
+			<index name="pk_product_product_id" unique="PRIMARY_KEY" >
+				<column name="product_id" />
+			</index>
+		</table>
+		<table name="product_category" >
+			<column name="category_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_category_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="unit_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_unit_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="category_name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="category_image" type="bytea" jt="-2" />
+			<index name="pk_product_category_category_id" unique="PRIMARY_KEY" >
+				<column name="category_id" />
+			</index>
+			<fk name="fk_product_category_unit" to_schema="public" to_table="unit" delete_action="restrict" >
+				<fk_column name="unit_id" pk="unit_id" />
+			</fk>
+		</table>
+		<table name="product_category_relation" >
+			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_relation_product_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="category_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_relation_category_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_product_category_relation" unique="PRIMARY_KEY" >
+				<column name="product_id" />
+				<column name="category_id" />
+			</index>
+			<fk name="fk_product_category_relation_product" to_schema="public" to_table="product" >
+				<fk_column name="product_id" pk="product_id" />
+			</fk>
+			<fk name="fk_product_category_relation_product_category" to_schema="public" to_table="product_category" delete_action="restrict" >
+				<fk_column name="category_id" pk="category_id" />
+			</fk>
+		</table>
+		<table name="unit" >
+			<column name="unit_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('unit_unit_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="unit_symbol" type="text" jt="12" mandatory="y" />
+			<index name="pk_unit_unit_id" unique="PRIMARY_KEY" >
+				<column name="unit_id" />
+			</index>
+		</table>
+		<table name="unit_conversion" >
+			<column name="conversion_factor" type="float8" length="17" decimal="17" jt="6" mandatory="y" />
+			<column name="unit_factor" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('unit_conversion_unit_factor_seq'::regclass)]]></defo>
+			</column>
+			<column name="unit_result" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('unit_conversion_unit_result_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_unit_conversion" unique="PRIMARY_KEY" >
+				<column name="conversion_factor" />
+				<column name="unit_factor" />
+				<column name="unit_result" />
+			</index>
+			<fk name="fk_unit_conversion_unit" to_schema="public" to_table="unit" delete_action="cascade" >
+				<fk_column name="unit_factor" pk="unit_id" />
+			</fk>
+			<fk name="fk_unit_conversion_unit_0" to_schema="public" to_table="unit" delete_action="cascade" >
+				<fk_column name="unit_result" pk="unit_id" />
+			</fk>
+		</table>
+		<table name="user_account" >
+			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('user_account_account_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="login" type="text" jt="12" mandatory="y" />
+			<column name="sir_name" type="varchar" length="100" jt="12" />
+			<column name="last_name" type="varchar" length="100" jt="12" />
+			<index name="pk_user_account_account_id" unique="PRIMARY_KEY" >
+				<column name="account_id" />
+			</index>
+			<index name="unq_user_account_login" unique="UNIQUE_INDEX" >
+				<column name="login" />
+			</index>
+		</table>
+		<sequence name="account_device_realtion_account_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="account_device_realtion_device_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="device_content_device_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="device_content_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="device_device_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_category_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_relation_category_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_relation_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_unit_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="unit_conversion_unit_factor_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="unit_conversion_unit_result_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="unit_unit_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="user_account_account_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<function name="armor" id="Function_11b" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.armor(bytea, text[], text[])
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_armor$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="ARRAY" />
+			<input_param jt="-1" type="ARRAY" />
+		</function>
+		<function name="armor" id="Function_2584" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.armor(bytea)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_armor$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+		</function>
+		<function name="crypt" id="Function_ce6" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.crypt(text, text)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_crypt$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="dearmor" id="Function_181e" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.dearmor(text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_dearmor$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="decrypt" id="Function_c7f" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.decrypt(bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_decrypt$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="decrypt_iv" id="Function_98e" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.decrypt_iv(bytea, bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_decrypt_iv$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="digest" id="Function_24d3" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.digest(bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_digest$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="digest" id="Function_1859" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.digest(text, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_digest$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="encrypt" id="Function_1b72" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.encrypt(bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_encrypt$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="encrypt_iv" id="Function_b92" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.encrypt_iv(bytea, bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_encrypt_iv$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="gen_random_bytes" id="Function_1f12" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.gen_random_bytes(integer)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_random_bytes$function$
+;]]></string>
+			<input_param jt="-1" type="integer" />
+		</function>
+		<function name="gen_random_uuid" id="Function_48b" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.gen_random_uuid()
+ RETURNS uuid
+ LANGUAGE c
+ PARALLEL SAFE
+AS '$libdir/pgcrypto', $function$pg_random_uuid$function$
+;]]></string>
+			<result_param jt="-1" />
+		</function>
+		<function name="gen_salt" id="Function_1989" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.gen_salt(text, integer)
+ RETURNS text
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_gen_salt_rounds$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="integer" />
+		</function>
+		<function name="gen_salt" id="Function_18ed" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.gen_salt(text)
+ RETURNS text
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_gen_salt$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="hmac" id="Function_8b7" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.hmac(bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_hmac$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="hmac" id="Function_435" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.hmac(text, text, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pg_hmac$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_armor_headers" id="Function_12ca" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_armor_headers(text, OUT key text, OUT value text)
+ RETURNS SETOF record
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_armor_headers$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<result_param name="key" jt="-1" type="text" />
+			<result_param name="value" jt="-1" type="text" />
+		</function>
+		<function name="pgp_key_id" id="Function_69a" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_key_id(bytea)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_key_id_w$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+		</function>
+		<function name="pgp_pub_decrypt" id="Function_1c87" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_decrypt(bytea, bytea, text, text)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_decrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_pub_decrypt" id="Function_213d" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_decrypt(bytea, bytea, text)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_decrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_pub_decrypt" id="Function_b11" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_decrypt(bytea, bytea)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_decrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+		</function>
+		<function name="pgp_pub_decrypt_bytea" id="Function_40c" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_decrypt_bytea(bytea, bytea, text, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_decrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_pub_decrypt_bytea" id="Function_1b84" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_decrypt_bytea(bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_decrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_pub_decrypt_bytea" id="Function_174e" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_decrypt_bytea(bytea, bytea)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_decrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+		</function>
+		<function name="pgp_pub_encrypt" id="Function_1a7c" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_encrypt(text, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_encrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_pub_encrypt" id="Function_1d6a" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_encrypt(text, bytea)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_encrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="bytea" />
+		</function>
+		<function name="pgp_pub_encrypt_bytea" id="Function_f38" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_encrypt_bytea(bytea, bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_encrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_pub_encrypt_bytea" id="Function_252b" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_pub_encrypt_bytea(bytea, bytea)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_pub_encrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="bytea" />
+		</function>
+		<function name="pgp_sym_decrypt" id="Function_167e" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_decrypt(bytea, text, text)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_decrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_decrypt" id="Function_12bb" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_decrypt(bytea, text)
+ RETURNS text
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_decrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_decrypt_bytea" id="Function_212d" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_decrypt_bytea(bytea, text, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_decrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_decrypt_bytea" id="Function_1118" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_decrypt_bytea(bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ IMMUTABLE PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_decrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_encrypt" id="Function_1c0b" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_encrypt(text, text, text)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_encrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_encrypt" id="Function_b5e" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_encrypt(text, text)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_encrypt_text$function$
+;]]></string>
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_encrypt_bytea" id="Function_1ead" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_encrypt_bytea(bytea, text, text)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_encrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+			<input_param jt="-1" type="text" />
+		</function>
+		<function name="pgp_sym_encrypt_bytea" id="Function_1fb6" isSystem="false" params_known="y" >
+			<string><![CDATA[CREATE OR REPLACE FUNCTION public.pgp_sym_encrypt_bytea(bytea, text)
+ RETURNS bytea
+ LANGUAGE c
+ PARALLEL SAFE STRICT
+AS '$libdir/pgcrypto', $function$pgp_sym_encrypt_bytea$function$
+;]]></string>
+			<input_param jt="-1" type="bytea" />
+			<input_param jt="-1" type="text" />
+		</function>
+	</schema>
+	<connector name="fridgDB-container" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.2.18.jar" driver_desc="Standard" host="localhost" port="5433" instance="fridgedb" user="docker" passwd="ZG9ja2Vy" />
+	<layout name="Parsed Script Layout" id="Layout_2245" show_relation="columns" >
+		<entity schema="public" name="account_device_realtion" color="C1D8EE" x="48" y="288" />
+		<entity schema="public" name="device" color="C1D8EE" x="48" y="480" />
+		<entity schema="public" name="device_content" color="C1D8EE" x="320" y="480" />
+		<entity schema="public" name="product" color="C1D8EE" x="608" y="480" >
+			<callout x="688" y="576" pointer="NV" on="barcode_id" />
+		</entity>
+		<entity schema="public" name="product_category" color="C1D8EE" x="608" y="928" />
+		<entity schema="public" name="product_category_relation" color="3986C1" x="608" y="736" />
+		<entity schema="public" name="unit" color="C1D8EE" x="928" y="928" />
+		<entity schema="public" name="unit_conversion" color="C1D8EE" x="928" y="736" />
+		<entity schema="public" name="user_account" color="C1D8EE" x="48" y="48" />
+		<script name="SQL_Editor" id="Editor_16e6" language="SQL" >
+			<string><![CDATA[CREATE EXTENSION pgcrypto;]]></string>
+		</script>
+		<script name="SQL_Editor_001" id="Editor_2f0" language="SQL" confirmed="y" >
+			<string><![CDATA[CREATE SEQUENCE "public".account_device_realtion_account_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".account_device_realtion_device_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".device_content_device_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".device_content_product_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".device_device_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_category_category_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_category_relation_category_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_category_relation_product_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_product_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".user_account_account_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE DOMAIN "public".passwd AS VARCHAR
+	CHECK (VALUE ~ E'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$');
+
+CREATE DOMAIN "public".percentage smallint DEFAULT 100 CONSTRAINT percentage_check CHECK (VALUE >= 0 AND VALUE <= 100);
+
+CREATE  TABLE "public".device ( 
+	device_id            integer DEFAULT nextval('device_device_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_device_device_id PRIMARY KEY ( device_id )
+ );
+
+CREATE  TABLE "public".product ( 
+	product_id           integer DEFAULT nextval('product_product_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_product_product_id PRIMARY KEY ( product_id )
+ );
+
+CREATE  TABLE "public".product_category ( 
+	category_id          integer DEFAULT nextval('product_category_category_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_product_category_category_id PRIMARY KEY ( category_id )
+ );
+
+CREATE  TABLE "public".product_category_relation ( 
+	product_id           integer DEFAULT nextval('product_category_relation_product_id_seq'::regclass) NOT NULL ,
+	category_id          integer DEFAULT nextval('product_category_relation_category_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_product_category_relation PRIMARY KEY ( product_id, category_id )
+ );
+
+CREATE  TABLE "public".user_account ( 
+	account_id           integer DEFAULT nextval('user_account_account_id_seq'::regclass) NOT NULL ,
+	login                text  NOT NULL ,
+	CONSTRAINT pk_user_account_account_id PRIMARY KEY ( account_id )
+ );
+
+CREATE UNIQUE INDEX unq_user_account_login ON "public".user_account ( login );
+
+CREATE  TABLE "public".account_device_realtion ( 
+	account_id           integer DEFAULT nextval('account_device_realtion_account_id_seq'::regclass) NOT NULL ,
+	device_id            integer DEFAULT nextval('account_device_realtion_device_id_seq'::regclass) NOT NULL 
+ );
+
+CREATE  TABLE "public".device_content ( 
+	filled_in            timestamp(0) DEFAULT CURRENT_TIMESTAMP NOT NULL ,
+	device_id            integer DEFAULT nextval('device_content_device_id_seq'::regclass) NOT NULL ,
+	product_id           integer DEFAULT nextval('device_content_product_id_seq'::regclass) NOT NULL ,
+	dropped_out          timestamp(0)   ,
+	percentage_left      "public".percentage   ,
+	CONSTRAINT pk_device_content PRIMARY KEY ( filled_in, device_id, product_id )
+ );
+
+ALTER TABLE "public".account_device_realtion ADD CONSTRAINT fk_account_device_realtion_user_account FOREIGN KEY ( account_id ) REFERENCES "public".user_account( account_id );
+
+ALTER TABLE "public".account_device_realtion ADD CONSTRAINT fk_account_device_realtion_device FOREIGN KEY ( device_id ) REFERENCES "public".device( device_id );
+
+ALTER TABLE "public".device_content ADD CONSTRAINT fk_device_content_device FOREIGN KEY ( device_id ) REFERENCES "public".device( device_id ) ON DELETE RESTRICT;
+
+ALTER TABLE "public".device_content ADD CONSTRAINT fk_device_content_product FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id ) ON DELETE RESTRICT;
+
+ALTER TABLE "public".product_category_relation ADD CONSTRAINT fk_product_category_relation_product FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id );
+
+ALTER TABLE "public".product_category_relation ADD CONSTRAINT fk_product_category_relation_product_category FOREIGN KEY ( category_id ) REFERENCES "public".product_category( category_id ) ON DELETE RESTRICT;
+]]></string>
+		</script>
+		<script name="passwd" id="Editor_1e89" language="SQL" confirmed="y" >
+			<string><![CDATA[CREATE DOMAIN "public".passwd VARCHAR 
+	CHECK (VALUE ~ E'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$')
+]]></string>
+		</script>
+		<script name="passwd_001" id="Editor_dc1" language="SQL" confirmed="y" >
+			<string><![CDATA[CREATE DOMAIN passwd AS TEXT
+	CHECK (VALUE ~ '^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$');]]></string>
+		</script>
+	</layout>
+</project>

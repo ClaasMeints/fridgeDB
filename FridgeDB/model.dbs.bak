@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="fridgDB-container" id="Project_2609" database="PostgreSQL" >
+	<schema name="public" >
+		<comment><![CDATA[standard public schema]]></comment>
+		<udt name="percentage" udt_java_type="5" udt_precision="NONE" >
+			<udt_script><![CDATA[CREATE DOMAIN ${name} smallint DEFAULT 100 CONSTRAINT percentage_check CHECK (VALUE >= 0 AND VALUE <= 100)]]></udt_script>
+		</udt>
+		<table name="account_device_realtion" >
+			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('account_device_realtion_account_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('account_device_realtion_device_id_seq'::regclass)]]></defo>
+			</column>
+			<fk name="fk_account_device_realtion_user_account" to_schema="public" to_table="user_account" >
+				<fk_column name="account_id" pk="account_id" />
+			</fk>
+			<fk name="fk_account_device_realtion_device" to_schema="public" to_table="device" >
+				<fk_column name="device_id" pk="device_id" />
+			</fk>
+		</table>
+		<table name="device" >
+			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('device_device_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_device_device_id" unique="PRIMARY_KEY" >
+				<column name="device_id" />
+			</index>
+		</table>
+		<table name="device_content" >
+			<column name="filled_in" type="timestamp" length="0" decimal="6" jt="93" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
+			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('device_content_device_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('device_content_product_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="dropped_out" prior="droped_out" type="timestamp" length="0" decimal="6" jt="93" />
+			<column name="percentage_left" type="percentage" jt="5" />
+			<index name="pk_device_content" unique="PRIMARY_KEY" >
+				<column name="filled_in" />
+				<column name="device_id" />
+				<column name="product_id" />
+			</index>
+			<fk name="fk_device_content_device" to_schema="public" to_table="device" delete_action="restrict" >
+				<fk_column name="device_id" pk="device_id" />
+			</fk>
+			<fk name="fk_device_content_product" to_schema="public" to_table="product" delete_action="restrict" >
+				<fk_column name="product_id" pk="product_id" />
+			</fk>
+		</table>
+		<table name="product" >
+			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_product_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_product_product_id" unique="PRIMARY_KEY" >
+				<column name="product_id" />
+			</index>
+		</table>
+		<table name="product_category" >
+			<column name="category_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_category_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_product_category_category_id" unique="PRIMARY_KEY" >
+				<column name="category_id" />
+			</index>
+		</table>
+		<table name="product_category_relation" >
+			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_relation_product_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="category_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_relation_category_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_product_category_relation" unique="PRIMARY_KEY" >
+				<column name="product_id" />
+				<column name="category_id" />
+			</index>
+			<fk name="fk_product_category_relation_product" to_schema="public" to_table="product" >
+				<fk_column name="product_id" pk="product_id" />
+			</fk>
+			<fk name="fk_product_category_relation_product_category" to_schema="public" to_table="product_category" delete_action="restrict" >
+				<fk_column name="category_id" pk="category_id" />
+			</fk>
+		</table>
+		<table name="user_account" >
+			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('user_account_account_id_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_user_account_account_id" unique="PRIMARY_KEY" >
+				<column name="account_id" />
+			</index>
+		</table>
+		<sequence name="account_device_realtion_account_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="account_device_realtion_device_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="device_content_device_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="device_content_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="device_device_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_category_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_relation_category_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_relation_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="user_account_account_id_seq" options="START WITH 1 INCREMENT BY 1" />
+	</schema>
+	<connector name="fridgDB-container" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.2.18.jar" driver_desc="Standard" host="localhost" port="5433" instance="fridgedb" user="docker" passwd="ZG9ja2Vy" />
+	<layout name="Main Layout" id="Layout_2245" show_relation="columns" >
+		<entity schema="public" name="account_device_realtion" color="C1D8EE" x="48" y="208" />
+		<entity schema="public" name="device" color="C1D8EE" x="48" y="400" />
+		<entity schema="public" name="device_content" color="C1D8EE" x="320" y="400" />
+		<entity schema="public" name="product" color="C1D8EE" x="608" y="400" />
+		<entity schema="public" name="product_category" color="C1D8EE" x="608" y="832" />
+		<entity schema="public" name="product_category_relation" color="C1D8EE" x="608" y="624" />
+		<entity schema="public" name="user_account" color="C1D8EE" x="48" y="48" />
+	</layout>
+</project>
