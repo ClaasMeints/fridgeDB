@@ -1,4 +1,4 @@
-package claas.expo.app.newarchitecture.modules;
+package com.fridgedbapp.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

@@ -1,4 +1,4 @@
-package claas.expo.app.newarchitecture;
+package com.fridgedbapp.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import claas.expo.app.BuildConfig;
-import claas.expo.app.newarchitecture.components.MainComponentsRegistry;
-import claas.expo.app.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.fridgedbapp.BuildConfig;
+import com.fridgedbapp.newarchitecture.components.MainComponentsRegistry;
+import com.fridgedbapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

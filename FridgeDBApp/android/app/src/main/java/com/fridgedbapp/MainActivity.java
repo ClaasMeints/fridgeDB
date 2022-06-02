@@ -1,4 +1,4 @@
-package claas.expo.app;
+package com.fridgedbapp;
 
 import android.os.Build;
 import android.os.Bundle;

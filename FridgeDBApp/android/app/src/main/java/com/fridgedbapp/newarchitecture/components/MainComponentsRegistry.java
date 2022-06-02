@@ -1,4 +1,4 @@
-package claas.expo.app.newarchitecture.components;
+package com.fridgedbapp.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
