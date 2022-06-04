@@ -5,6 +5,9 @@
 		<udt name="percentage" udt_java_type="5" udt_precision="NONE" >
 			<udt_script><![CDATA[CREATE DOMAIN ${name} smallint DEFAULT 100 CONSTRAINT percentage_check CHECK (VALUE >= 0 AND VALUE <= 100)]]></udt_script>
 		</udt>
+		<udt name="passwd" udt_java_type="12" udt_precision="NONE" >
+			<udt_script><![CDATA[CREATE DOMAIN ${name} text]]></udt_script>
+		</udt>
 		<table name="account_device_realtion" >
 			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('account_device_realtion_account_id_seq'::regclass)]]></defo>
@@ -12,6 +15,10 @@
 			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('account_device_realtion_device_id_seq'::regclass)]]></defo>
 			</column>
+			<index name="pk_account_device_realtion" unique="PRIMARY_KEY" >
+				<column name="account_id" />
+				<column name="device_id" />
+			</index>
 			<fk name="fk_account_device_realtion_user_account" to_schema="public" to_table="user_account" >
 				<fk_column name="account_id" pk="account_id" />
 			</fk>
@@ -23,6 +30,7 @@
 			<column name="device_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('device_device_id_seq'::regclass)]]></defo>
 			</column>
+			<column name="device_name" type="varchar" length="100" jt="12" />
 			<index name="pk_device_device_id" unique="PRIMARY_KEY" >
 				<column name="device_id" />
 			</index>
@@ -55,6 +63,10 @@
 			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('product_product_id_seq'::regclass)]]></defo>
 			</column>
+			<column name="product_name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="barcode_id" type="integer" jt="4" >
+				<comment><![CDATA[Recerence to external API]]></comment>
+			</column>
 			<index name="pk_product_product_id" unique="PRIMARY_KEY" >
 				<column name="product_id" />
 			</index>
@@ -63,9 +75,17 @@
 			<column name="category_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('product_category_category_id_seq'::regclass)]]></defo>
 			</column>
+			<column name="unit_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('product_category_unit_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="category_name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="category_image" type="bytea" jt="-2" />
 			<index name="pk_product_category_category_id" unique="PRIMARY_KEY" >
 				<column name="category_id" />
 			</index>
+			<fk name="fk_product_category_unit" to_schema="public" to_table="unit" delete_action="restrict" >
+				<fk_column name="unit_id" pk="unit_id" />
+			</fk>
 		</table>
 		<table name="product_category_relation" >
 			<column name="product_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
@@ -85,12 +105,48 @@
 				<fk_column name="category_id" pk="category_id" />
 			</fk>
 		</table>
+		<table name="unit" >
+			<column name="unit_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('unit_unit_id_seq'::regclass)]]></defo>
+			</column>
+			<column name="unit_symbol" type="text" jt="12" mandatory="y" />
+			<index name="pk_unit_unit_id" unique="PRIMARY_KEY" >
+				<column name="unit_id" />
+			</index>
+		</table>
+		<table name="unit_conversion" >
+			<column name="conversion_factor" type="double precision" length="17" decimal="17" jt="3" mandatory="y" />
+			<column name="unit_factor" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('unit_conversion_unit_factor_seq'::regclass)]]></defo>
+			</column>
+			<column name="unit_result" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
+				<defo><![CDATA[nextval('unit_conversion_unit_result_seq'::regclass)]]></defo>
+			</column>
+			<index name="pk_unit_conversion" unique="PRIMARY_KEY" >
+				<column name="conversion_factor" />
+				<column name="unit_factor" />
+				<column name="unit_result" />
+			</index>
+			<fk name="fk_unit_conversion_unit" to_schema="public" to_table="unit" delete_action="cascade" >
+				<fk_column name="unit_factor" pk="unit_id" />
+			</fk>
+			<fk name="fk_unit_conversion_unit_0" to_schema="public" to_table="unit" delete_action="cascade" >
+				<fk_column name="unit_result" pk="unit_id" />
+			</fk>
+		</table>
 		<table name="user_account" >
 			<column name="account_id" type="integer" length="10" decimal="0" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('user_account_account_id_seq'::regclass)]]></defo>
 			</column>
+			<column name="login" type="text" jt="12" mandatory="y" />
+			<column name="passwd" type="passwd" jt="12" mandatory="y" />
+			<column name="sir_name" type="varchar" length="100" jt="12" />
+			<column name="last_name" type="varchar" length="100" jt="12" />
 			<index name="pk_user_account_account_id" unique="PRIMARY_KEY" >
 				<column name="account_id" />
+			</index>
+			<index name="unq_user_account_login" unique="UNIQUE_INDEX" >
+				<column name="login" />
 			</index>
 		</table>
 		<sequence name="account_device_realtion_account_id_seq" options="START WITH 1 INCREMENT BY 1" />
@@ -101,17 +157,119 @@
 		<sequence name="product_category_category_id_seq" options="START WITH 1 INCREMENT BY 1" />
 		<sequence name="product_category_relation_category_id_seq" options="START WITH 1 INCREMENT BY 1" />
 		<sequence name="product_category_relation_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="product_category_unit_id_seq" options="START WITH 1 INCREMENT BY 1" />
 		<sequence name="product_product_id_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="unit_conversion_unit_factor_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="unit_conversion_unit_result_seq" options="START WITH 1 INCREMENT BY 1" />
+		<sequence name="unit_unit_id_seq" options="START WITH 1 INCREMENT BY 1" />
 		<sequence name="user_account_account_id_seq" options="START WITH 1 INCREMENT BY 1" />
 	</schema>
-	<connector name="fridgDB-container" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.2.18.jar" driver_desc="Standard" host="localhost" port="5433" instance="fridgedb" user="docker" passwd="ZG9ja2Vy" />
-	<layout name="Main Layout" id="Layout_2245" show_relation="columns" >
-		<entity schema="public" name="account_device_realtion" color="C1D8EE" x="48" y="208" />
-		<entity schema="public" name="device" color="C1D8EE" x="48" y="400" />
-		<entity schema="public" name="device_content" color="C1D8EE" x="320" y="400" />
-		<entity schema="public" name="product" color="C1D8EE" x="608" y="400" />
-		<entity schema="public" name="product_category" color="C1D8EE" x="608" y="832" />
-		<entity schema="public" name="product_category_relation" color="C1D8EE" x="608" y="624" />
+	<connector name="fridgDB-container" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.3.5.jar" driver_desc="Standard" host="localhost" port="5433" instance="fridgedb" user="docker" passwd="ZG9ja2Vy" />
+	<layout name="Parsed Script Layout" id="Layout_2245" show_relation="columns" >
+		<entity schema="public" name="account_device_realtion" color="C1D8EE" x="48" y="288" />
+		<entity schema="public" name="device" color="C1D8EE" x="48" y="480" />
+		<entity schema="public" name="device_content" color="C1D8EE" x="320" y="480" />
+		<entity schema="public" name="product" color="C1D8EE" x="608" y="480" >
+			<callout x="688" y="576" pointer="NV" on="barcode_id" />
+		</entity>
+		<entity schema="public" name="product_category" color="C1D8EE" x="608" y="928" />
+		<entity schema="public" name="product_category_relation" color="3986C1" x="608" y="736" />
+		<entity schema="public" name="unit" color="C1D8EE" x="928" y="928" />
+		<entity schema="public" name="unit_conversion" color="C1D8EE" x="928" y="736" />
 		<entity schema="public" name="user_account" color="C1D8EE" x="48" y="48" />
+		<script name="SQL_Editor" id="Editor_16e6" language="SQL" >
+			<string><![CDATA[CREATE EXTENSION pgcrypto;]]></string>
+		</script>
+		<script name="SQL_Editor_001" id="Editor_2f0" language="SQL" confirmed="y" >
+			<string><![CDATA[CREATE SEQUENCE "public".account_device_realtion_account_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".account_device_realtion_device_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".device_content_device_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".device_content_product_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".device_device_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_category_category_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_category_relation_category_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_category_relation_product_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".product_product_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE SEQUENCE "public".user_account_account_id_seq START WITH 1 INCREMENT BY 1;
+
+CREATE DOMAIN "public".passwd AS VARCHAR
+	CHECK (VALUE ~ E'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$');
+
+CREATE DOMAIN "public".percentage smallint DEFAULT 100 CONSTRAINT percentage_check CHECK (VALUE >= 0 AND VALUE <= 100);
+
+CREATE  TABLE "public".device ( 
+	device_id            integer DEFAULT nextval('device_device_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_device_device_id PRIMARY KEY ( device_id )
+ );
+
+CREATE  TABLE "public".product ( 
+	product_id           integer DEFAULT nextval('product_product_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_product_product_id PRIMARY KEY ( product_id )
+ );
+
+CREATE  TABLE "public".product_category ( 
+	category_id          integer DEFAULT nextval('product_category_category_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_product_category_category_id PRIMARY KEY ( category_id )
+ );
+
+CREATE  TABLE "public".product_category_relation ( 
+	product_id           integer DEFAULT nextval('product_category_relation_product_id_seq'::regclass) NOT NULL ,
+	category_id          integer DEFAULT nextval('product_category_relation_category_id_seq'::regclass) NOT NULL ,
+	CONSTRAINT pk_product_category_relation PRIMARY KEY ( product_id, category_id )
+ );
+
+CREATE  TABLE "public".user_account ( 
+	account_id           integer DEFAULT nextval('user_account_account_id_seq'::regclass) NOT NULL ,
+	login                text  NOT NULL ,
+	CONSTRAINT pk_user_account_account_id PRIMARY KEY ( account_id )
+ );
+
+CREATE UNIQUE INDEX unq_user_account_login ON "public".user_account ( login );
+
+CREATE  TABLE "public".account_device_realtion ( 
+	account_id           integer DEFAULT nextval('account_device_realtion_account_id_seq'::regclass) NOT NULL ,
+	device_id            integer DEFAULT nextval('account_device_realtion_device_id_seq'::regclass) NOT NULL 
+ );
+
+CREATE  TABLE "public".device_content ( 
+	filled_in            timestamp(0) DEFAULT CURRENT_TIMESTAMP NOT NULL ,
+	device_id            integer DEFAULT nextval('device_content_device_id_seq'::regclass) NOT NULL ,
+	product_id           integer DEFAULT nextval('device_content_product_id_seq'::regclass) NOT NULL ,
+	dropped_out          timestamp(0)   ,
+	percentage_left      "public".percentage   ,
+	CONSTRAINT pk_device_content PRIMARY KEY ( filled_in, device_id, product_id )
+ );
+
+ALTER TABLE "public".account_device_realtion ADD CONSTRAINT fk_account_device_realtion_user_account FOREIGN KEY ( account_id ) REFERENCES "public".user_account( account_id );
+
+ALTER TABLE "public".account_device_realtion ADD CONSTRAINT fk_account_device_realtion_device FOREIGN KEY ( device_id ) REFERENCES "public".device( device_id );
+
+ALTER TABLE "public".device_content ADD CONSTRAINT fk_device_content_device FOREIGN KEY ( device_id ) REFERENCES "public".device( device_id ) ON DELETE RESTRICT;
+
+ALTER TABLE "public".device_content ADD CONSTRAINT fk_device_content_product FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id ) ON DELETE RESTRICT;
+
+ALTER TABLE "public".product_category_relation ADD CONSTRAINT fk_product_category_relation_product FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id );
+
+ALTER TABLE "public".product_category_relation ADD CONSTRAINT fk_product_category_relation_product_category FOREIGN KEY ( category_id ) REFERENCES "public".product_category( category_id ) ON DELETE RESTRICT;
+]]></string>
+		</script>
+		<script name="passwd" id="Editor_1e89" language="SQL" confirmed="y" >
+			<string><![CDATA[CREATE DOMAIN "public".passwd VARCHAR 
+	CHECK (VALUE ~ E'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$')
+]]></string>
+		</script>
+		<script name="passwd_001" id="Editor_dc1" language="SQL" confirmed="y" >
+			<string><![CDATA[CREATE DOMAIN passwd AS TEXT
+	CHECK (VALUE ~ '^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$');]]></string>
+		</script>
 	</layout>
 </project>

@@ -1,27 +1,6 @@
 version: '3.8'
 
 services:
-  web:
-    build: ./FridgeDBBackend
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./FridgeDBBackend/:/usr/src/app/
-    ports:
-      - 8000:8000
-    env_file:
-      - ./.env.dev
-    depends_on:
-      - db
-  django-db:
-    image: postgres:14.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=dev
-      - POSTGRES_DB=django
 
   fridge-db:
     image: postgres:14.0-alpine
@@ -29,11 +8,10 @@ services:
       - ./FridgeDB/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
       - firdge_data:/var/lib/postgresql/data/
     ports:
-      - 5433:5432
+      - 5432:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
 volumes:
-  postgres_data:
   firdge_data:
